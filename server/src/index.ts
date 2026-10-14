@@ -4,10 +4,10 @@ import cors from 'cors';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
-import { prisma } from './prisma';
 import { authRouter } from './routes/auth';
 import { roomsRouter } from './routes/rooms';
 import { socketHandlers } from './socket';
+import { setIoInstance } from './socketRegistry';
 
 const app = express();
 app.use(express.json());
@@ -24,6 +24,8 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, {
   cors: { origin: process.env.CORS_ORIGIN?.split(',') || '*' }
 });
+
+setIoInstance(io);
 
 io.use((socket, next) => {
   const token = socket.handshake.auth?.token as string | undefined;
